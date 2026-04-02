@@ -1,0 +1,217 @@
+<div class="dashboard-page">
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-icon">E</div>
+      <span>EmpowHer</span>
+    </div>
+    <nav class="topnav">
+      <a routerLink="/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Dashboard</a>
+      <a routerLink="/profile" routerLinkActive="active">Profile</a>
+      <a routerLink="/connect" routerLinkActive="active">Connect</a>
+      <a routerLink="/community" routerLinkActive="active">Community</a>
+      <button type="button" class="theme-toggle" (click)="themeService.toggleTheme()" [attr.aria-label]="themeService.theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'">
+        <svg *ngIf="themeService.theme === 'dark'" viewBox="0 0 24 24" class="theme-icon">
+          <path d="M17.7 16.3A8 8 0 1 1 7.7 5.3 6.5 6.5 0 0 0 17.7 16.3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        <svg *ngIf="themeService.theme !== 'dark'" viewBox="0 0 24 24" class="theme-icon">
+          <circle cx="12" cy="12" r="5" fill="none" stroke="currentColor" stroke-width="2" />
+          <line x1="12" y1="1" x2="12" y2="4" stroke="currentColor" stroke-width="2" />
+          <line x1="12" y1="20" x2="12" y2="23" stroke="currentColor" stroke-width="2" />
+          <line x1="1" y1="12" x2="4" y2="12" stroke="currentColor" stroke-width="2" />
+          <line x1="20" y1="12" x2="23" y2="12" stroke="currentColor" stroke-width="2" />
+        </svg>
+      </button>
+    </nav>
+  </header>
+
+  <main class="content-shell">
+    <section class="hero-card">
+      <div class="hero-top">
+        <div>
+          <p class="eyebrow">Welcome back, {{ userName }}</p>
+          <h1>Create compelling pitch materials and track your fundraising readiness</h1>
+        </div>
+      </div>
+
+      <div class="score-panel">
+        <div class="score-card">
+          <div class="score-label with-tooltip">
+            <span>Investor Readiness Score</span>
+            <span class="tooltip-trigger" tabindex="0" aria-label="More information about Investor Readiness Score">
+              i
+              <span class="tooltip-content">This score tells you how ready you are to approach an investor.</span>
+            </span>
+          </div>
+          <div class="score-row">
+            <span class="score-value">{{ readiness.score }}</span>
+            <span class="score-max">/100</span>
+          </div>
+          <div class="score-subtitle">You're making great progress! Complete the remaining actions to increase your score.</div>
+          <div class="meter">
+            <div class="meter-fill" [style.width.%]="readiness.score"></div>
+          </div>
+        </div>
+
+        <div class="status-cards">
+          <article>
+            <span>Status</span>
+            <strong>{{ readiness.status }}</strong>
+          </article>
+          <article>
+            <span>Progress</span>
+            <strong>{{ readiness.progress }}</strong>
+          </article>
+        </div>
+
+        <div class="readiness-breakdown" *ngIf="strengths.length || weaknesses.length">
+          <article class="readiness-list strengths">
+            <h3>Strengths</h3>
+            <ul>
+              <li *ngFor="let item of strengths">{{ item }}</li>
+            </ul>
+          </article>
+
+          <article class="readiness-list weaknesses">
+            <h3>Weaknesses</h3>
+            <ul>
+              <li *ngFor="let item of weaknesses">{{ item }}</li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="summary-cards">
+      <article class="summary-card" *ngFor="let metric of metrics">
+        <span>{{ metric.label }}</span>
+        <strong>{{ metric.value }}</strong>
+      </article>
+    </section>
+
+    <section class="dashboard-grid">
+      <section class="deck-list">
+        <div class="section-header">
+          <div>
+            <h2>Your Pitch Decks</h2>
+            <p>Create, edit, and share your pitch materials with investors</p>
+          </div>
+          <button class="primary" type="button" (click)="openSheroModal()">Create New Pitch Deck</button>
+        </div>
+
+        <div class="deck-cards">
+          <article class="deck-card" *ngFor="let deck of deckCards" [style.--deck-image]="getDeckBackgroundImage(deck.title)">
+            <div class="deck-info">
+              <div class="deck-icon">📄</div>
+              <div>
+                <h3>{{ deck.title }}</h3>
+                <p>{{ deck.version }} · {{ deck.updated }} <span class="tag" [class.active]="deck.status === 'Active'">{{ deck.status }}</span></p>
+              </div>
+            </div>
+            <div class="deck-actions">
+              <div class="deck-meta">
+                <span>{{ deck.slides }}</span>
+                <span>{{ deck.views }} views</span>
+                <span>{{ deck.downloads }} downloads</span>
+              </div>
+              <button class="secondary">Edit Deck</button>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <aside class="insights-panel">
+        <div class="insight-card">
+          <h3>Start with a Template</h3>
+          <p>Choose from investor-approved templates to create your pitch deck</p>
+          <div class="template-grid">
+            <div
+              class="template-card"
+              *ngFor="let template of templates"
+              [class.selected]="selectedTemplate === template"
+              (click)="selectTemplate(template)">
+              <strong>{{ template.title }}</strong>
+              <p>{{ template.description }}</p>
+              <span>{{ template.slides }}</span>
+            </div>
+          </div>
+
+          <div class="selected-template" *ngIf="selectedTemplate">
+            <h4>Selected template</h4>
+            <p><strong>{{ selectedTemplate.title }}</strong> · {{ selectedTemplate.slides }}</p>
+            <button class="secondary" type="button" (click)="useTemplate()">Start with this template</button>
+          </div>
+        </div>
+
+        <div class="insight-card">
+          <h3>Next Steps to Improve</h3>
+          <p>Recommended actions to boost your readiness score</p>
+          <div class="action-list">
+            <div class="action-item" *ngFor="let action of actionCards; index as i">
+              <span class="action-index">{{ i + 1 }}</span>
+              <div>
+                <strong>{{ action.title }}</strong>
+                <span class="action-points">{{ action.points }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="insight-card">
+          <h3>Content Performance</h3>
+          <p>Track how your pitch materials are performing</p>
+          <div class="performance-list">
+            <div class="performance-item" *ngFor="let item of contentPerformance">
+              <div class="performance-title">
+                <span class="performance-dot" [style.background]="item.color"></span>
+                <div>
+                  <strong>{{ item.title }}</strong>
+                  <span class="performance-metric">{{ item.metric }}</span>
+                </div>
+              </div>
+              <strong class="performance-growth">{{ item.growth }}</strong>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <div class="shero-backdrop" *ngIf="showSheroModal" aria-live="polite">
+    <section class="shero-modal" role="dialog" aria-modal="true" aria-label="SHERO AI Pitch Deck Assistant">
+      <header class="shero-header">
+        <div class="shero-brand">
+          <div class="shero-logo">S</div>
+          <div>
+            <h3>SHERO</h3>
+            <p>Your AI Pitch Deck Assistant</p>
+          </div>
+        </div>
+        <button type="button" class="shero-close" (click)="closeSheroModal()" aria-label="Close assistant">x</button>
+      </header>
+
+      <div class="shero-body">
+        <div class="shero-messages">
+          <article class="shero-message" *ngFor="let message of sheroMessages" [class.user]="message.sender === 'user'">
+            <p>{{ message.text }}</p>
+          </article>
+        </div>
+
+        <div class="shero-quick-actions">
+          <button type="button" *ngFor="let action of sheroQuickActions" (click)="useSheroQuickAction(action)" [disabled]="sheroSending">{{ action }}</button>
+        </div>
+      </div>
+
+      <footer class="shero-footer">
+        <textarea
+          rows="2"
+          placeholder="Type your message here... Tell me about your business and what you need help with."
+          [(ngModel)]="sheroDraft"
+          [disabled]="sheroSending"
+        ></textarea>
+        <button type="button" class="shero-send" [disabled]="!sheroDraft.trim() || sheroSending" (click)="sendSheroMessage()">
+          {{ sheroSending ? 'Sending...' : 'Send' }}
+        </button>
+      </footer>
+    </section>
+  </div>
+</div>

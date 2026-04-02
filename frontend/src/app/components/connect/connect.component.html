@@ -1,0 +1,116 @@
+<div class="connect-page">
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-icon">E</div>
+      <span>EmpowHer</span>
+    </div>
+
+    <nav class="topnav">
+      <a routerLink="/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Dashboard</a>
+      <a routerLink="/profile" routerLinkActive="active">Profile</a>
+      <a routerLink="/connect" routerLinkActive="active">Connect</a>
+      <a routerLink="/community" routerLinkActive="active">Community</a>
+      <button type="button" class="theme-toggle" (click)="themeService.toggleTheme()" [attr.aria-label]="themeService.theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'">
+        <svg *ngIf="themeService.theme === 'dark'" viewBox="0 0 24 24" class="theme-icon">
+          <path d="M17.7 16.3A8 8 0 1 1 7.7 5.3 6.5 6.5 0 0 0 17.7 16.3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        <svg *ngIf="themeService.theme !== 'dark'" viewBox="0 0 24 24" class="theme-icon">
+          <circle cx="12" cy="12" r="5" fill="none" stroke="currentColor" stroke-width="2" />
+          <line x1="12" y1="1" x2="12" y2="4" stroke="currentColor" stroke-width="2" />
+          <line x1="12" y1="20" x2="12" y2="23" stroke="currentColor" stroke-width="2" />
+          <line x1="1" y1="12" x2="4" y2="12" stroke="currentColor" stroke-width="2" />
+          <line x1="20" y1="12" x2="23" y2="12" stroke="currentColor" stroke-width="2" />
+        </svg>
+      </button>
+    </nav>
+  </header>
+
+  <main class="content-shell">
+    <section class="hero-card">
+      <div>
+        <p class="eyebrow">Connect with Investors & Mentors</p>
+        <h1>Find the right people to support your funding journey</h1>
+      </div>
+
+      <div class="search-row">
+        <input type="text" placeholder="Search by name, expertise, or industry..." />
+        <button class="filter-button">Filters</button>
+      </div>
+    </section>
+
+    <section class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon">👥</div>
+        <strong>247</strong>
+        <span>Active Investors</span>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">🎓</div>
+        <strong>89</strong>
+        <span>Mentors Available</span>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">🔗</div>
+        <strong>24</strong>
+        <span>Your Connections</span>
+      </div>
+    </section>
+
+    <section class="profile-grid">
+      <article class="contact-card" *ngFor="let contact of contacts">
+        <div class="contact-top">
+          <div class="avatar">{{ contact.initials }}</div>
+          <div>
+            <h2>{{ contact.name }}</h2>
+            <p class="role">{{ contact.role }}</p>
+            <p class="location">{{ contact.location }}</p>
+          </div>
+        </div>
+
+        <div class="focus-row">
+          <span class="label">Focus Areas</span>
+          <div class="chips">
+            <span class="chip" *ngFor="let area of contact.focusAreas">{{ area }}</span>
+          </div>
+        </div>
+
+        <p class="investments">{{ contact.investments }} investments</p>
+        <button 
+          class="connect-button" 
+          [class.pending]="isContactPending(contact.name)"
+          [disabled]="isContactPending(contact.name)"
+          (click)="openModal(contact)">
+          {{ isContactPending(contact.name) ? 'Pending' : 'Connect' }}
+        </button>
+      </article>
+    </section>
+  </main>
+
+  <div class="modal-backdrop" *ngIf="showModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div>
+          <p class="eyebrow">Message</p>
+          <h2>
+            {{ sent ? 'Message sent!' : 'Send a note to ' + selectedContact?.name }}
+          </h2>
+        </div>
+        <button class="close-button" (click)="closeModal()">✕</button>
+      </div>
+
+      <div *ngIf="!sent" class="modal-body">
+        <textarea
+          rows="7"
+          placeholder="Write a note to introduce yourself and explain why you'd like to connect..."
+          [(ngModel)]="noteText"
+        ></textarea>
+        <button class="send-button" [disabled]="!noteText.trim()" (click)="sendNote()">Send note</button>
+      </div>
+
+      <div *ngIf="sent" class="modal-body success-body">
+        <p>Thanks! Your message to {{ selectedContact?.name }} has been sent.</p>
+        <button class="send-button" (click)="closeModal()">Close</button>
+      </div>
+    </div>
+  </div>
+</div>

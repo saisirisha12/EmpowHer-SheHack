@@ -1,0 +1,144 @@
+<main class="page-shell">
+  <section class="question-card">
+    <section *ngIf="loading" class="building-screen" aria-live="polite">
+      <h2>Our algorithm is evaluating your profile...</h2>
+      <div class="progress-track" role="progressbar" [attr.aria-valuenow]="buildProgress" aria-valuemin="0" aria-valuemax="100">
+        <div class="progress-bar" [style.width.%]="buildProgress"></div>
+      </div>
+
+      <div class="document-illustration" aria-hidden="true">
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+
+      <p class="progress-value">{{ buildProgress }}%</p>
+    </section>
+
+    <header class="card-header" *ngIf="!showWelcomeChoice && !loading">
+      <div>
+        <p class="eyebrow">Questionnaire</p>
+        <h1>{{ stepTitles[currentStep] }}</h1>
+        <p class="subtitle">Answer the quick questions below so we can shape your founder profile and readiness score.</p>
+      </div>
+      <span class="step-pill">Step {{ currentStep + 1 }} of {{ stepCount }}</span>
+    </header>
+
+    <section *ngIf="showWelcomeChoice && !loading" class="welcome-choice">
+      <!-- <p class="eyebrow">Founder flow</p> -->
+      <h1>What would you like to do today?</h1>
+      <p class="subtitle">
+        Returning founders can jump straight back into the dashboard. If you're pitching a new business, start the questionnaire to build a fresh profile.
+      </p>
+
+      <div class="choice-grid">
+        <article class="choice-card">
+          <span class="choice-badge">Returning user</span>
+          <h2>{{ hasExistingProfile ? 'Continue with your existing profile' : 'Go straight to your dashboard' }}</h2>
+          <p>Skip the questionnaire and head directly to your workspace, decks, and investor readiness insights.</p>
+          <button type="button" class="secondary choice-button" (click)="skipToDashboard()">Go to dashboard</button>
+        </article>
+
+        <article class="choice-card choice-card-accent">
+          <span class="choice-badge">New business</span>
+          <h2>Pitch a new business</h2>
+          <p>Answer a few quick questions so EmpowHer can shape your founder profile, readiness score, and matching recommendations.</p>
+          <button type="button" class="choice-button" (click)="startQuestionnaire()">Start questionnaire</button>
+        </article>
+      </div>
+    </section>
+
+    <form *ngIf="!showWelcomeChoice && !loading" [formGroup]="form" class="question-form">
+      <ng-container [ngSwitch]="currentStep">
+        <section *ngSwitchCase="0" class="field-group">
+          <p class="question-heading">Q1. Tell us about your startup</p>
+          <label>
+            Company name
+            <input type="text" formControlName="companyName" placeholder="e.g. Launchpad Labs" />
+          </label>
+          <label>
+            What does it do?
+            <textarea formControlName="description" rows="3" placeholder="Write one sentence about the product or service"></textarea>
+          </label>
+
+          <p class="question-heading">Q2. Where are you in your journey?</p>
+          <div class="radio-grid">
+            <label *ngFor="let option of journeyOptions" class="radio-card" [class.selected]="form.controls.journey.value === option.value">
+              <input type="radio" [value]="option.value" formControlName="journey" />
+              <span>{{ option.label }}</span>
+            </label>
+          </div>
+        </section>
+
+        <section *ngSwitchCase="1" class="field-group">
+          <p class="question-heading">Q3. What do you want help with most?</p>
+          <div class="chip-grid">
+            <button type="button" class="chip" [class.selected]="helpAreas.value.includes(option)" *ngFor="let option of helpOptions" (click)="toggleHelpArea(option)">
+              {{ option }}
+            </button>
+          </div>
+
+          <p class="question-heading">Q4. Pick your industry</p>
+          <div class="chip-grid">
+            <button type="button" class="chip" [class.selected]="isIndustrySelected(option)" *ngFor="let option of industryOptions" (click)="toggleIndustry(option)">
+              {{ option }}
+            </button>
+          </div>
+          <label *ngIf="isOtherIndustrySelected">
+            Other
+            <input type="text" formControlName="otherIndustry" placeholder="Please specify" />
+          </label>
+        </section>
+
+        <section *ngSwitchCase="2" class="field-group two-column">
+          <div>
+            <p class="question-heading">Q5. Funding status</p>
+            <div class="radio-grid column">
+              <label *ngFor="let option of fundingOptions" class="radio-card" [class.selected]="form.controls.fundingStatus.value === option.value">
+                <input type="radio" [value]="option.value" formControlName="fundingStatus" />
+                <span>{{ option.label }}</span>
+              </label>
+            </div>
+          </div>
+
+          <div>
+            <p class="question-heading">Q6. Business registration status</p>
+            <div class="radio-grid column">
+              <label *ngFor="let option of registrationOptions" class="radio-card" [class.selected]="form.controls.registrationStatus.value === option.value">
+                <input type="radio" [value]="option.value" formControlName="registrationStatus" />
+                <span>{{ option.label }}</span>
+              </label>
+            </div>
+          </div>
+        </section>
+      </ng-container>
+
+      <div class="form-foot">
+        <button type="button" class="secondary" (click)="prevStep()" [disabled]="currentStep === 0 || loading">Back</button>
+
+        <button
+          *ngIf="currentStep < stepCount - 1"
+          type="button"
+          (click)="nextStep()"
+          [disabled]="loading || !canContinue()"
+        >
+          Next
+        </button>
+
+        <button
+          *ngIf="currentStep === stepCount - 1"
+          type="button"
+          class="primary-submit"
+          (click)="submit()"
+          [disabled]="loading"
+        >
+          Submit & Build Profile
+        </button>
+      </div>
+
+      <p class="error-message" *ngIf="error">{{ error }}</p>
+    </form>
+  </section>
+</main>

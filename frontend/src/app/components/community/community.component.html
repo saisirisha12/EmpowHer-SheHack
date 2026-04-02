@@ -1,0 +1,100 @@
+<div class="community-page">
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-icon">E</div>
+      <span>EmpowHer</span>
+    </div>
+    <nav class="topnav">
+      <a routerLink="/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Dashboard</a>
+      <a routerLink="/profile" routerLinkActive="active">Profile</a>
+      <a routerLink="/connect" routerLinkActive="active">Connect</a>
+      <a routerLink="/community" routerLinkActive="active">Community</a>
+      <button type="button" class="theme-toggle" (click)="themeService.toggleTheme()" [attr.aria-label]="themeService.theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'">
+        <svg *ngIf="themeService.theme === 'dark'" viewBox="0 0 24 24" class="theme-icon">
+          <path d="M17.7 16.3A8 8 0 1 1 7.7 5.3 6.5 6.5 0 0 0 17.7 16.3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        <svg *ngIf="themeService.theme !== 'dark'" viewBox="0 0 24 24" class="theme-icon">
+          <circle cx="12" cy="12" r="5" fill="none" stroke="currentColor" stroke-width="2" />
+          <line x1="12" y1="1" x2="12" y2="4" stroke="currentColor" stroke-width="2" />
+          <line x1="12" y1="20" x2="12" y2="23" stroke="currentColor" stroke-width="2" />
+          <line x1="1" y1="12" x2="4" y2="12" stroke="currentColor" stroke-width="2" />
+          <line x1="20" y1="12" x2="23" y2="12" stroke="currentColor" stroke-width="2" />
+        </svg>
+      </button>
+    </nav>
+  </header>
+
+  <main class="content-shell">
+    <section class="community-hero">
+      <div>
+        <p class="eyebrow">Community</p>
+        <h1>Share updates, read conversations, and react with your peers.</h1>
+        <p class="hero-copy">Post your latest fundraising wins, ask questions, and support the community with quick reactions.</p>
+      </div>
+      <div class="community-stats">
+        <div>
+          <strong>{{ posts.length }}</strong>
+          <span>Active posts</span>
+        </div>
+        <div>
+          <strong>{{ totalLikes }}</strong>
+          <span>Total likes</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="community-grid">
+      <section class="post-composer">
+        <div class="panel-header">
+          <div>
+            <p class="eyebrow">Start a post</p>
+            <h2>Share what you need help with</h2>
+          </div>
+        </div>
+
+        <label>
+          Title
+          <input type="text" [(ngModel)]="newPost.title" placeholder="Write a short title" />
+        </label>
+
+        <label>
+          Post
+          <textarea rows="6" [(ngModel)]="newPost.body" placeholder="Describe your update, question or resource."></textarea>
+        </label>
+
+        <div class="composer-actions">
+          <button type="button" class="primary" (click)="submitPost()">Post to community</button>
+          <span class="hint">Your post will appear at the top of the feed.</span>
+        </div>
+      </section>
+
+      <section class="feed-panel">
+        <div class="panel-header">
+          <div>
+            <p class="eyebrow">Community feed</p>
+            <h2>Latest conversations</h2>
+          </div>
+        </div>
+
+        <article class="community-post" *ngFor="let post of posts">
+          <div class="post-headline">
+            <div>
+              <h3>{{ post.title }}</h3>
+              <p>{{ post.body }}</p>
+            </div>
+            <div class="post-meta">
+              <span>{{ post.author }}</span>
+              <span>{{ post.role }}</span>
+              <span>{{ post.timestamp }}</span>
+            </div>
+          </div>
+
+          <div class="post-actions">
+            <button type="button" class="outline" (click)="likePost(post)">👍 React {{ post.likes }}</button>
+            <span>{{ post.comments }} comments</span>
+          </div>
+        </article>
+      </section>
+    </div>
+  </main>
+</div>

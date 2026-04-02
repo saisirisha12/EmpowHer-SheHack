@@ -1,0 +1,106 @@
+<div class="profile-page">
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-icon">E</div>
+      <span>EmpowHer</span>
+    </div>
+
+    <nav class="topnav">
+      <a routerLink="/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Dashboard</a>
+      <a routerLink="/profile" routerLinkActive="active">Profile</a>
+      <a routerLink="/connect" routerLinkActive="active">Connect</a>
+      <a routerLink="/community" routerLinkActive="active">Community</a>
+      <button type="button" class="theme-toggle" (click)="themeService.toggleTheme()" [attr.aria-label]="themeService.theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'">
+        <svg *ngIf="themeService.theme === 'dark'" viewBox="0 0 24 24" class="theme-icon">
+          <path d="M17.7 16.3A8 8 0 1 1 7.7 5.3 6.5 6.5 0 0 0 17.7 16.3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        <svg *ngIf="themeService.theme !== 'dark'" viewBox="0 0 24 24" class="theme-icon">
+          <circle cx="12" cy="12" r="5" fill="none" stroke="currentColor" stroke-width="2" />
+          <line x1="12" y1="1" x2="12" y2="4" stroke="currentColor" stroke-width="2" />
+          <line x1="12" y1="20" x2="12" y2="23" stroke="currentColor" stroke-width="2" />
+          <line x1="1" y1="12" x2="4" y2="12" stroke="currentColor" stroke-width="2" />
+          <line x1="20" y1="12" x2="23" y2="12" stroke="currentColor" stroke-width="2" />
+        </svg>
+      </button>
+    </nav>
+  </header>
+
+  <main class="content-shell">
+    <section class="profile-summary-card">
+      <div class="profile-main">
+        <div class="profile-avatar">SA</div>
+        <div class="profile-copy">
+          <div class="header-row">
+            <div>
+              <h1>{{ userName }}</h1>
+              <p class="headline">{{ title }}</p>
+              <div class="meta-row">
+                <span>{{ location }}</span>
+                <span class="divider">•</span>
+                <span>{{ industry }}</span>
+              </div>
+              <div class="badges-row">
+                <span class="badge accent">Series A</span>
+                <span class="badge">Founded 2023</span>
+                <span class="badge">12 employees</span>
+              </div>
+            </div>
+            <button class="edit-button">Edit Profile</button>
+          </div>
+
+          <p class="description">{{ description }}</p>
+
+          <div class="contact-links">
+            <a *ngFor="let item of contactLinks" href="#" class="contact-pill">
+              <span>{{ item.icon }}</span>
+              <span>{{ item.label }}</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="overview-grid">
+      <article class="overview-card">
+        <h2>Areas of Expertise</h2>
+        <div class="expertise-list">
+          <span class="expertise-pill" *ngFor="let item of expertise">{{ item.label }}</span>
+        </div>
+      </article>
+
+      <article class="overview-card">
+        <h2>Key Achievements</h2>
+        <ul class="achievements-list">
+          <li *ngFor="let achievement of achievements">{{ achievement.text }}</li>
+        </ul>
+      </article>
+    </section>
+
+    <section class="overview-grid bottom-grid">
+      <article class="overview-card detail-card">
+        <h2>Company Overview</h2>
+        <div class="info-list">
+          <div class="info-row" *ngFor="let item of companyOverview">
+            <strong>{{ item.label }}</strong>
+            <p>{{ item.value }}</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="overview-card detail-card">
+        <div class="info-row status-row">
+          <div>
+            <h2>Funding Information</h2>
+          </div>
+          <span class="status-chip">Actively Raising</span>
+        </div>
+        <div class="info-list">
+          <div class="info-row" *ngFor="let item of fundingInfo">
+            <strong>{{ item.label }}</strong>
+            <p>{{ item.value }}</p>
+          </div>
+        </div>
+      </article>
+    </section>
+  </main>
+</div>
